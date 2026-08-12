@@ -1,0 +1,26 @@
+<view class="auth-email-screen">
+  <view class="auth-email-content">
+    <text class="auth-email-title">Vincular conta do Instituto</text>
+    <text class="auth-email-subtitle">Digite seu e-mail institucional para vincular sua conta Phiz.</text>
+
+    <view class="auth-email-form">
+      <input
+        class="auth-email-input {{hasError ? 'auth-email-input-error' : ''}}"
+        type="text"
+        placeholder="seuemail@institutojf.org.br"
+        value="{{email}}"
+        bindinput="onEmailInput"
+      />
+      <text wx:if="{{hasError}}" class="auth-email-error">{{errorMessage}}</text>
+    </view>
+
+    <button
+      class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
+      loading="{{isLoading}}"
+      disabled="{{isLoading}}"
+      bindtap="onSubmit"
+    >
+      Enviar verificação
+    </button>
+  </view>
+</view>

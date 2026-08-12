@@ -1,0 +1,16 @@
+{
+  "description": "Project configuration files",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {},
+  "compileType": "miniprogram",
+  "appid": "69c3d54ffd23000001618607",
+  "projectname": "MiniApp-Autenticacao",
+  "isGameTourist": false,
+  "isFulljs": false,
+  "projectType": 0,
+  "buildOption": {
+    "compilerSource": "wx"
+  }
+}

@@ -1,0 +1,5 @@
+<view class="container">
+  <view class="usermotto" bindtap="bindViewTap">
+    <text class="user-motto">{{motto}}</text>
+  </view>
+</view>

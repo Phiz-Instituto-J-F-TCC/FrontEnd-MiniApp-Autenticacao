@@ -1,0 +1,17 @@
+<view class="auth-success-screen">
+  <view class="auth-success-content">
+    <view class="auth-success-symbol">
+      <view class="auth-success-check">
+        <view class="auth-success-check-stroke auth-success-check-stroke-short"></view>
+        <view class="auth-success-check-stroke auth-success-check-stroke-long"></view>
+      </view>
+    </view>
+
+    <text class="auth-success-title">Conta vinculada com sucesso!</text>
+    <text class="auth-success-subtitle">O e-mail foi vinculado ao seu Phiz ID.</text>
+
+    <button class="auth-success-primary-button" bindtap="onFinish">
+      Concluir
+    </button>
+  </view>
+</view>

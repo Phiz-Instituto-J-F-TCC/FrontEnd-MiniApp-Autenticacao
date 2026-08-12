@@ -1,0 +1,7 @@
+{
+    "desc": "For more information about this document, please refer to the documentation https://m.phiz.live/mop-en/document/en/introduce/introduction/phizclip.html",
+    "rules": [{
+    "action": "allow",
+    "page": "*"
+    }]
+}

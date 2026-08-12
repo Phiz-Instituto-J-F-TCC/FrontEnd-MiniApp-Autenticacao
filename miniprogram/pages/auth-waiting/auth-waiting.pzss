@@ -1,0 +1,110 @@
+.auth-waiting-screen {
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 62rpx;
+  box-sizing: border-box;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
+
+.auth-waiting-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-waiting-symbol {
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 72rpx;
+  background: #eef0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50rpx;
+}
+
+.auth-waiting-envelope {
+  position: relative;
+  width: 52rpx;
+  height: 38rpx;
+  border: 2rpx solid #5955eb;
+  border-radius: 6rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.auth-waiting-envelope-fold {
+  position: absolute;
+  top: 4rpx;
+  width: 34rpx;
+  height: 2rpx;
+  background: #5955eb;
+}
+
+.auth-waiting-envelope-fold-left {
+  left: -2rpx;
+  transform: rotate(34deg);
+  transform-origin: left center;
+}
+
+.auth-waiting-envelope-fold-right {
+  right: -2rpx;
+  transform: rotate(-34deg);
+  transform-origin: right center;
+}
+
+.auth-waiting-title {
+  display: block;
+  color: #1d0db8;
+  font-size: 32rpx;
+  line-height: 42rpx;
+  font-weight: 700;
+}
+
+.auth-waiting-subtitle {
+  display: block;
+  color: #8b8b8b;
+  font-size: 24rpx;
+  line-height: 32rpx;
+  margin-top: 46rpx;
+}
+
+.auth-waiting-email {
+  display: block;
+  max-width: 520rpx;
+  color: #9b9b9b;
+  font-size: 20rpx;
+  line-height: 28rpx;
+  margin-top: 28rpx;
+  word-break: break-all;
+}
+
+.auth-waiting-hint {
+  display: block;
+  width: 580rpx;
+  color: #8b8b8b;
+  font-size: 20rpx;
+  line-height: 28rpx;
+  margin-top: 30rpx;
+}
+
+.auth-waiting-secondary-button {
+  width: 354rpx;
+  height: 78rpx;
+  margin: 56rpx auto 0;
+  border-radius: 12rpx;
+  background: #ffffff;
+  color: #1d0db8;
+  border: 2rpx solid #1d0db8;
+  font-size: 24rpx;
+  font-weight: 400;
+  line-height: 74rpx;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: inherit;
+}
