@@ -1,12 +1,6 @@
-const API_BASE_URL = 'http://127.0.0.1:8080'
-const MOCK_NUMERO_CELULAR = '00000000000'
-
+const API_BASE_URL = 'https://authentication-api-h6wc.onrender.com'
 const POLL_INTERVAL_MS = 5000
 const RESEND_COOLDOWN_SECONDS = 30
-
-type AuthenticateResponse = {
-  authentication_id?: number
-}
 
 type AuthenticationStatusResponse = {
   verified?: boolean
@@ -15,25 +9,27 @@ type AuthenticationStatusResponse = {
 Page({
   data: {
     email: '',
-    authenticationId: 0,
     resendDisabled: false,
     resendCountdown: 0,
   },
 
   pollTimer: null as ReturnType<typeof setInterval> | null,
   resendTimer: null as ReturnType<typeof setInterval> | null,
+  pollingToken: '',
 
   onLoad(query: Record<string, string>) {
     const email = decodeURIComponent(query.email || '')
-    this.setData({ email, MOCK_NUMERO_CELULAR })
-    if (email && MOCK_NUMERO_CELULAR) {
-      this.startPolling(email, MOCK_NUMERO_CELULAR)
+    const pollingToken = decodeURIComponent(query.polling_token || '')
+    this.pollingToken = pollingToken
+    this.setData({ email })
+    if (email && pollingToken) {
+      this.startPolling(pollingToken)
     }
   },
 
   onShow() {
-    if (this.data.email && this.MOCK_NUMERO_CELULAR) {
-      this.checkVerificationStatus(this.data.email, this.MOCK_NUMERO_CELULAR)
+    if (this.data.email && this.pollingToken) {
+      this.checkVerificationStatus(this.pollingToken)
     }
   },
 
@@ -42,10 +38,10 @@ Page({
     this.stopResendCooldown()
   },
 
-  startPolling(email: string, numeroCelular: string) {
+  startPolling(pollingToken: string) {
     this.stopPolling()
     this.pollTimer = setInterval(() => {
-      this.checkVerificationStatus(email, numeroCelular)
+      this.checkVerificationStatus(pollingToken)
     }, POLL_INTERVAL_MS)
   },
 
@@ -56,21 +52,23 @@ Page({
     }
   },
 
-  checkVerificationStatus(email: string, numeroCelular: string) {
+  checkVerificationStatus(pollingToken: string) {
     pz.request({
-      url: `${API_BASE_URL}/authentication-status`,
+      url: `${API_BASE_URL}/authentication_status`,
       method: 'GET',
-      data: {
-        email,
-        numero_celular: numeroCelular,
+      header: {
+        'X-Authentication-Polling-Token': pollingToken,
       },
       success: (res) => {
         const body = res.data as AuthenticationStatusResponse
-        if (body?.verified) {
+        if (res.statusCode === 200 && body?.verified) {
           this.stopPolling()
           pz.redirectTo({
-            url: `../auth-success/auth-success?email=${encodeURIComponent(email)}`,
+            url: `../auth-success/auth-success?email=${encodeURIComponent(this.data.email)}`,
           })
+        } else if (res.statusCode === 401) {
+          this.stopPolling()
+          pz.showToast({ title: 'Sua sessão expirou. Inicie novamente.', icon: 'none' })
         }
       },
       fail: () => {
@@ -85,23 +83,21 @@ Page({
       return
     }
 
-    const numeroCelular = getApp<IAppOption>().globalData.numeroCelular
-    if (!numeroCelular) {
-      pz.showToast({ title: 'Não foi possível identificar seu número Phiz.', icon: 'none' })
+    const pollingToken = this.pollingToken
+    if (!pollingToken) {
+      pz.showToast({ title: 'Sua sessão expirou. Inicie novamente.', icon: 'none' })
       return
     }
 
     pz.request({
-      url: `${API_BASE_URL}/authenticate`,
+      url: `${API_BASE_URL}/authentication_resend`,
       method: 'POST',
-      data: {
-        email,
-        numero_celular: numeroCelular,
+      header: {
+        'X-Authentication-Polling-Token': pollingToken,
       },
       success: (res) => {
-        const body = res.data as AuthenticateResponse
         if (res.statusCode === 200) {
-          this.startPolling(email, MOCK_NUMERO_CELULAR)
+          this.startPolling(pollingToken)
           pz.showToast({ title: 'E-mail reenviado', icon: 'success' })
           this.startResendCooldown()
           return

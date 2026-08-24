@@ -15,12 +15,24 @@
     </view>
 
     <button
+      wx:if="{{!emailIsEligible}}"
+      class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
+      loading="{{isLoading}}"
+      disabled="{{isLoading || !canRequestPhone}}"
+      bindtap="onVerifyEmail"
+    >
+      Enviar verificação
+    </button>
+
+    <button
+      wx:else
       class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
       loading="{{isLoading}}"
       disabled="{{isLoading}}"
-      bindtap="onSubmit"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhoneNumber"
     >
-      Enviar verificação
+      Autorizar número e enviar verificação
     </button>
   </view>
 </view>

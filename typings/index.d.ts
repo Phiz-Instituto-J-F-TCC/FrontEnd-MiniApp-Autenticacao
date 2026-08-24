@@ -1,6 +1,1 @@
-
-interface IAppOption {
-  globalData: {
-    numeroCelular: string
-  }
-}
+interface IAppOption {}
