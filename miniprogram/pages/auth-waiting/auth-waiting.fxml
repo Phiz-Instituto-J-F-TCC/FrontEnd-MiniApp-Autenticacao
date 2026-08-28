@@ -1,0 +1,23 @@
+<view class="auth-waiting-screen">
+  <view class="auth-waiting-content">
+    <view class="auth-waiting-symbol">
+      <view class="auth-waiting-envelope">
+        <view class="auth-waiting-envelope-fold auth-waiting-envelope-fold-left"></view>
+        <view class="auth-waiting-envelope-fold auth-waiting-envelope-fold-right"></view>
+      </view>
+    </view>
+
+    <text class="auth-waiting-title">Verifique seu e-mail</text>
+    <text class="auth-waiting-subtitle">Enviamos um link de confirmação para:</text>
+    <text class="auth-waiting-email">{{email}}</text>
+    <text class="auth-waiting-hint">Clique no link recebido para concluir a vinculação. Esta tela será atualizada automaticamente.</text>
+
+    <button
+      class="auth-waiting-secondary-button"
+      disabled="{{resendDisabled}}"
+      bindtap="onResend"
+    >
+      {{resendDisabled ? 'Reenviar em ' + resendCountdown + 's' : 'Reenviar e-mail'}}
+    </button>
+  </view>
+</view>

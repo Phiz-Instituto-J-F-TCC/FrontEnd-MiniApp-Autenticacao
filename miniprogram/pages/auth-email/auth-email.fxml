@@ -12,15 +12,6 @@
         bindinput="onEmailInput"
       />
 
-      <input
-        wx:if="{{emailIsEligible}}"
-        class="auth-email-input auth-phone-input {{hasError ? 'auth-email-input-error' : ''}}"
-        type="number"
-        placeholder="(00) 00000-0000"
-        value="{{phone}}"
-        maxlength="11"
-        bindinput="onPhoneInput"
-      />
       <text wx:if="{{hasError}}" class="auth-email-error">{{errorMessage}}</text>
     </view>
 
@@ -28,10 +19,10 @@
       wx:if="{{!emailIsEligible}}"
       class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
       loading="{{isLoading}}"
-      disabled="{{isLoading || !canRequestPhone}}"
+      disabled="{{isLoading || !canSubmitEmail}}"
       bindtap="onVerifyEmail"
     >
-      Enviar verificação
+      Continuar
     </button>
 
     <button
@@ -39,9 +30,9 @@
       class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
       loading="{{isLoading}}"
       disabled="{{isLoading}}"
-      bindtap="onConfirmPhone"
+      bindtap="onLinkPhizIdentity"
     >
-      Confirmar número
+      Vincular conta Phiz
     </button>
   </view>
 </view>

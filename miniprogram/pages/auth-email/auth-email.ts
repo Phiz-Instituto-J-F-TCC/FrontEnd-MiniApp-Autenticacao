@@ -2,14 +2,38 @@ const API_BASE_URL = 'https://authentication-api-h6wc.onrender.com'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+type AuthenticationEmailStatusResponse = {
+  eligible?: boolean
+  detail?: string
+}
+
 type AuthenticateResponse = {
   polling_token?: string
   detail?: string
 }
 
-type AuthenticationEmailStatusResponse = {
-  eligible?: boolean
-  detail?: string
+type PhizUserInfoResponse = {
+  userId?: string
+  userInfo?: {
+    userId?: string
+  }
+}
+
+function getPhizId(response: PhizUserInfoResponse): string {
+  const userId = response.userId || response.userInfo?.userId
+  return typeof userId === 'string' ? userId.trim() : ''
+}
+
+function getResponseData<T>(data: unknown): T {
+  if (typeof data !== 'string') {
+    return data as T
+  }
+
+  try {
+    return JSON.parse(data) as T
+  } catch {
+    return {} as T
+  }
 }
 
 Page({
@@ -18,7 +42,7 @@ Page({
     hasError: false,
     errorMessage: '',
     isLoading: false,
-    canRequestPhone: false,
+    canSubmitEmail: false,
     emailIsEligible: false,
   },
 
@@ -28,7 +52,7 @@ Page({
       email,
       hasError: false,
       errorMessage: '',
-      canRequestPhone: EMAIL_REGEX.test(email.trim()),
+      canSubmitEmail: EMAIL_REGEX.test(email.trim()),
       emailIsEligible: false,
     })
   },
@@ -57,9 +81,10 @@ Page({
     pz.request({
       url: `${API_BASE_URL}/authentication_email_status`,
       method: 'POST',
+      dataType: 'json',
       data: { email },
       success: (res) => {
-        const body = res.data as AuthenticationEmailStatusResponse
+        const body = getResponseData<AuthenticationEmailStatusResponse>(res.data)
         if (res.statusCode === 200 && body.eligible) {
           this.setData({ hasError: false, errorMessage: '', emailIsEligible: true })
           return
@@ -86,7 +111,7 @@ Page({
     })
   },
 
-  onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
+  onLinkPhizIdentity() {
     const email = this.data.email.trim()
     const validationError = this.validateEmail(email)
 
@@ -98,61 +123,74 @@ Page({
     if (!this.data.emailIsEligible) {
       this.setData({
         hasError: true,
-        errorMessage: 'Verifique seu e-mail antes de autorizar o número pelo Phiz.',
+        errorMessage: 'Verifique seu e-mail antes de vincular sua conta Phiz.',
       })
       return
     }
 
-    const phoneCode = e.detail.code
-    if (typeof phoneCode !== 'string' || !phoneCode) {
-      this.setData({
-        hasError: true,
-        errorMessage: 'Para continuar, autorize o acesso ao seu número pelo Phiz.',
-      })
-      return
-    }
+    this.setData({ isLoading: true, hasError: false, errorMessage: '' })
 
-    this.setData({ isLoading: true })
+    pz.getUserInfo({
+      success: (userInfoResult: PhizUserInfoResponse) => {
+        const phizId = getPhizId(userInfoResult)
 
+        if (!phizId) {
+          this.setData({
+            isLoading: false,
+            hasError: true,
+            errorMessage: 'Não foi possível obter seu identificador no Phiz. Tente novamente.',
+          })
+          return
+        }
+
+        this.startAuthentication(email, phizId)
+      },
+      fail: () => {
+        this.setData({
+          isLoading: false,
+          hasError: true,
+          errorMessage: 'Não foi possível obter seu identificador no Phiz. Tente novamente.',
+        })
+      },
+    })
+  },
+
+  startAuthentication(email: string, phizId: string) {
     pz.request({
       url: `${API_BASE_URL}/authenticate`,
       method: 'POST',
-      data: {
-        email,
-        phone_code: phoneCode,
-      },
+      dataType: 'json',
+      data: { email, phiz_id: phizId },
       success: (res) => {
-        const body = res.data as AuthenticateResponse
-        const pollingToken = body?.polling_token
+        const body = getResponseData<AuthenticateResponse>(res.data)
+        const pollingToken = body.polling_token
+
         if (res.statusCode === 200 && typeof pollingToken === 'string' && pollingToken) {
           pz.navigateTo({
-            url: `/pages/auth-waiting/auth-waiting?email=${encodeURIComponent(email)}&polling_token=${encodeURIComponent(pollingToken)}`,
+            url: `../auth-waiting/auth-waiting?email=${encodeURIComponent(email)}&polling_token=${encodeURIComponent(pollingToken)}`,
             fail: () => {
               this.setData({
                 hasError: true,
-                errorMessage: 'A autenticação foi iniciada, mas não foi possível abrir a próxima tela. Tente novamente.',
+                errorMessage: 'A confirmação foi iniciada, mas não foi possível abrir a próxima tela. Tente novamente.',
               })
             },
           })
-        } else {
-          this.setData({
-            hasError: true,
-            errorMessage:
-              res.statusCode === 404
-                ? 'E-mail não encontrado ou está inativo.'
-                : body.detail || 'Não foi possível enviar a verificação. Tente novamente.',
-          })
+          return
         }
+
+        this.setData({
+          hasError: true,
+          errorMessage: body.detail || 'Não foi possível iniciar a confirmação. Tente novamente.',   })
       },
       fail: () => {
-        pz.showToast({
-          title: 'Falha de conexão. Verifique sua internet.',
-          icon: 'none',
+        this.setData({
+          hasError: true,
+          errorMessage: 'Falha de conexão. Verifique sua internet.',
         })
       },
       complete: () => {
         this.setData({ isLoading: false })
       },
     })
-  },
+  }
 })

@@ -57,10 +57,6 @@
   border-color: #ff6b6b;
 }
 
-.auth-phone-input {
-  margin-top: 20rpx;
-}
-
 .auth-email-error {
   display: block;
   color: #ff6b6b;

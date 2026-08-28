@@ -6,6 +6,18 @@ type AuthenticationStatusResponse = {
   verified?: boolean
 }
 
+function getResponseData<T>(data: unknown): T {
+  if (typeof data !== 'string') {
+    return data as T
+  }
+
+  try {
+    return JSON.parse(data) as T
+  } catch {
+    return {} as T
+  }
+}
+
 Page({
   data: {
     email: '',
@@ -60,8 +72,8 @@ Page({
         'X-Authentication-Polling-Token': pollingToken,
       },
       success: (res) => {
-        const body = res.data as AuthenticationStatusResponse
-        if (res.statusCode === 200 && body?.verified) {
+        const body = getResponseData<AuthenticationStatusResponse>(res.data)
+        if (res.statusCode === 200 && body?.verified === true) {
           this.stopPolling()
           pz.redirectTo({
             url: `../auth-success/auth-success?email=${encodeURIComponent(this.data.email)}`,
