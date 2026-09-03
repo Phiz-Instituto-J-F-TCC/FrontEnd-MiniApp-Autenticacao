@@ -1,5 +1,1 @@
-
-interface IAppOption {
-  globalData: {
-  }
-}
+interface IAppOption {}

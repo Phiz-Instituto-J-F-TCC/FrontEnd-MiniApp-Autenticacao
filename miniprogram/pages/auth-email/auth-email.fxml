@@ -11,16 +11,28 @@
         value="{{email}}"
         bindinput="onEmailInput"
       />
+
       <text wx:if="{{hasError}}" class="auth-email-error">{{errorMessage}}</text>
     </view>
 
     <button
+      wx:if="{{!emailIsEligible}}"
+      class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
+      loading="{{isLoading}}"
+      disabled="{{isLoading || !canSubmitEmail}}"
+      bindtap="onVerifyEmail"
+    >
+      Continuar
+    </button>
+
+    <button
+      wx:else
       class="auth-email-primary-button {{hasError ? 'auth-email-primary-button-with-error' : ''}}"
       loading="{{isLoading}}"
       disabled="{{isLoading}}"
-      bindtap="onSubmit"
+      bindtap="onLinkPhizIdentity"
     >
-      Enviar verificação
+      Vincular conta Phiz
     </button>
   </view>
 </view>

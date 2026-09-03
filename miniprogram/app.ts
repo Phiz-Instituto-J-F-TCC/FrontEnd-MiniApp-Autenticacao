@@ -1,5 +1,4 @@
-App<IAppOption>({
-  globalData: {},
+App({
   onLaunch() {
     const logs = pz.getStorageSync('logs') || []
     logs.unshift(Date.now())

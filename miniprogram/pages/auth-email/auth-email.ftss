@@ -81,6 +81,12 @@
   font-family: inherit;
 }
 
+.auth-email-primary-button[disabled] {
+  background: #1d0db8;
+  color: #ffffff;
+  opacity: 1;
+}
+
 .auth-email-primary-button-with-error {
   margin-top: 24rpx;
 }
